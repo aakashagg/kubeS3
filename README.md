@@ -1,10 +1,11 @@
-# kubes3
-// TODO(user): Add simple overview of use/purpose
+# kubeS3
+It lets you create a S3 bucket in AWS and manage it using Kubernetes CRDs.
 
 ## Description
-// TODO(user): An in-depth paragraph about your project and overview of use
+kubeS3 is a Kubernetes controller that allows you to create and manage S3 buckets in AWS using Kubernetes CRDs. It provides a simple way to create and manage S3 buckets in AWS using Kubernetes CRDs. It is built using Kubebuilder and controller-runtime.
 
 ## Getting Started
+To get started with kubeS3, you need to have the following prerequisites installed on your system:
 
 ### Prerequisites
 - go version v1.22.0+
