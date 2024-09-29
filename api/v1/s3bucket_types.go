@@ -23,19 +23,34 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
+//const (
+//	StateDeleted     State = "Deleted"
+//	StateFailed      State = "Failed"
+//	StateReconciling State = "Reconciling"
+//	StateReady       State = "Ready"
+//)
+
+// ###Important: Run "make" to regenerate code after modifying this file###
+
 // S3BucketSpec defines the desired state of S3Bucket
 type S3BucketSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	BucketName   string `json:"bucketName,required"`
+	Region       string `json:"region,required"`
+	BucketPolicy string `json:"bucketPolicy,omitempty"`
+	Acl          string `json:"acl,omitempty"`
 
-	// Foo is an example field of S3Bucket. Edit s3bucket_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 }
+
+type State string
 
 // S3BucketStatus defines the observed state of S3Bucket
 type S3BucketStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	State State  `json:"state,omitempty"`
+	Size  int64  `json:"size,omitempty"`
+	ARN   string `json:"arn,omitempty"`
 }
 
 // +kubebuilder:object:root=true
