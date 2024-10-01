@@ -18,7 +18,6 @@ package controller
 
 import (
 	"context"
-
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -27,6 +26,8 @@ import (
 	storagev1 "kubeS3/api/v1"
 )
 
+const defaultRegion = "us-east-1"
+
 // S3BucketReconciler reconciles a S3Bucket object
 type S3BucketReconciler struct {
 	client.Client
@@ -34,7 +35,7 @@ type S3BucketReconciler struct {
 }
 
 // +kubebuilder:rbac:groups=storage.awsresources.com,resources=s3buckets,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=storage.awsresources.com,resources=s3buckets/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=storage.awsresources.com,resources=s3buckets/status,verbs=get;update;create;patch
 // +kubebuilder:rbac:groups=storage.awsresources.com,resources=s3buckets/finalizers,verbs=update
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
@@ -47,7 +48,56 @@ type S3BucketReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.19.0/pkg/reconcile
 func (r *S3BucketReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	logger := log.FromContext(ctx)
+
+	logger.Info("Reconciling S3Bucket...")
+
+	// Fetch the S3Bucket resource
+	s3Bucket := &storagev1.S3Bucket{}
+	if err := r.Get(ctx, req.NamespacedName, s3Bucket); err != nil {
+		logger.Error(err, "Failed to fetch S3Bucket resource")
+		return ctrl.Result{}, err
+	}
+	bucketName := s3Bucket.Spec.BucketName
+
+	// Log the S3Bucket data
+	logger.Info("S3Bucket data", "BucketName", s3Bucket.Spec.BucketName, "Region", s3Bucket.Spec.Region, "State", s3Bucket.Status.State, "Size", s3Bucket.Status.Size, "ARN", s3Bucket.Status.ARN)
+
+	// create a aws session
+	sess, err := createSession(defaultRegion)
+	if err != nil {
+		logger.Error(err, "Failed to create AWS session")
+		return ctrl.Result{}, err
+	}
+
+	// check if bucket is being deleted
+	if err := r.handleBucketDeletion(ctx, sess, s3Bucket, bucketName); err != nil {
+		logger.Error(err, "Failed to handle bucket deletion")
+		return ctrl.Result{}, err
+	}
+
+	logger.Info("Bucket is not being deleted, checking for other operations...")
+
+	// Check if the S3 bucket already exists
+	bucketExists, err := ifBucketExistsOnS3(sess, bucketName)
+	if err != nil {
+		logger.Error(err, "Failed to check if S3 bucket exists")
+		return ctrl.Result{}, err
+	}
+
+	if bucketExists {
+		// Update the S3 bucket configuration
+		if err := updateBucket(sess, bucketName); err != nil {
+			logger.Error(err, "Failed to update S3 bucket")
+			return ctrl.Result{}, err
+		}
+	} else {
+		// Create a new S3 bucket
+		if err := createBucket(sess, bucketName); err != nil {
+			logger.Error(err, "Failed to create S3 bucket")
+			return ctrl.Result{}, err
+		}
+	}
 
 	// TODO(user): your logic here
 
