@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	storagev1 "kubeS3/api/v1"
+	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
 // createSession creates a new AWS session
@@ -81,6 +82,28 @@ func deleteBucket(sess *session.Session, bucketName string) error {
 	return nil
 }
 
+// handleBucketDeletion handles the deletion of the S3 bucket and removes the finalizer
+func (r *S3BucketReconciler) handleBucketDeletion(ctx context.Context, sess *session.Session, s3Bucket *storagev1.S3Bucket, bucketName string) error {
+	logger := log.FromContext(ctx)
+
+	if s3Bucket.ObjectMeta.DeletionTimestamp != nil {
+
+		// log the deletion
+		logger.Info("S3Bucket is being deleted", "BucketName", bucketName)
+
+		// delete the bucket
+		if err := deleteBucket(sess, bucketName); err != nil {
+			return err
+		}
+
+		// remove the finalizer so that k8s can delete the resource
+		if err := r.removeFinalizer(ctx, s3Bucket); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // removeFinalizer removes the finalizer from the S3 bucket
 func (r *S3BucketReconciler) removeFinalizer(ctx context.Context, s3Bucket *storagev1.S3Bucket) error {
 	// remove the finalizer
@@ -101,20 +124,4 @@ func removeString(slice []string, s string) []string {
 		}
 	}
 	return result
-}
-
-// handleBucketDeletion handles the deletion of the S3 bucket and removes the finalizer
-func (r *S3BucketReconciler) handleBucketDeletion(ctx context.Context, sess *session.Session, s3Bucket *storagev1.S3Bucket, bucketName string) error {
-	if s3Bucket.ObjectMeta.DeletionTimestamp != nil {
-		// delete the bucket
-		if err := deleteBucket(sess, bucketName); err != nil {
-			return err
-		}
-
-		// remove the finalizer so that k8s can delete the resource
-		if err := r.removeFinalizer(ctx, s3Bucket); err != nil {
-			return err
-		}
-	}
-	return nil
 }

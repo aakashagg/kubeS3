@@ -58,10 +58,10 @@ func (r *S3BucketReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		logger.Error(err, "Failed to fetch S3Bucket resource")
 		return ctrl.Result{}, err
 	}
-	bucketName := s3Bucket.Spec.BucketName
 
 	// Log the S3Bucket data
-	logger.Info("S3Bucket data", "BucketName", s3Bucket.Spec.BucketName, "Region", s3Bucket.Spec.Region, "State", s3Bucket.Status.State, "Size", s3Bucket.Status.Size, "ARN", s3Bucket.Status.ARN)
+	bucketName := s3Bucket.Spec.BucketName
+	logger.Info("S3Bucket data", "BucketName", bucketName, "Region", s3Bucket.Spec.Region, "State", s3Bucket.Status.State, "Size", s3Bucket.Status.Size, "ARN", s3Bucket.Status.ARN)
 
 	// create a aws session
 	sess, err := createSession(defaultRegion)
@@ -70,7 +70,7 @@ func (r *S3BucketReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		return ctrl.Result{}, err
 	}
 
-	// check if bucket is being deleted
+	// check if bucket is being deleted if so handle deletion
 	if err := r.handleBucketDeletion(ctx, sess, s3Bucket, bucketName); err != nil {
 		logger.Error(err, "Failed to handle bucket deletion")
 		return ctrl.Result{}, err
@@ -85,10 +85,14 @@ func (r *S3BucketReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		return ctrl.Result{}, err
 	}
 
+	// log if bucket exists
+	logger.Info("Bucket exists", "BucketExists", bucketExists)
+
 	if bucketExists {
 		// Update the S3 bucket configuration
 		if err := updateBucket(sess, bucketName); err != nil {
 			logger.Error(err, "Failed to update S3 bucket")
+			// update logic is work in progress
 			return ctrl.Result{}, err
 		}
 	} else {
@@ -98,8 +102,6 @@ func (r *S3BucketReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 			return ctrl.Result{}, err
 		}
 	}
-
-	// TODO(user): your logic here
 
 	return ctrl.Result{}, nil
 }
