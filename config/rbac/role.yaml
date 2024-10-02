@@ -27,6 +27,7 @@ rules:
   resources:
   - s3buckets/status
   verbs:
+  - create
   - get
   - patch
   - update
