@@ -11,18 +11,24 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
-// createSession creates a new AWS session
-func createSession(region string) (*session.Session, error) {
+// CreateSession creates a new AWS session
+func CreateSession(region string) (*session.Session, error) {
+	ctx := context.Background()
+	logger := log.FromContext(ctx)
+
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String(region),
 	})
+
+	logger.Info("Created AWS session", "session", sess)
+
 	if err != nil {
 		return nil, err
 	}
 	return sess, nil
 }
 
-func ifBucketExistsOnS3(sess *session.Session, bucketName string) (bool, error) {
+func IfBucketExistsOnS3(sess *session.Session, bucketName string) (bool, error) {
 
 	svc := s3.New(sess)
 
@@ -41,7 +47,7 @@ func ifBucketExistsOnS3(sess *session.Session, bucketName string) (bool, error) 
 	return true, nil
 }
 
-func updateBucket(sess *session.Session, bucketName string) error {
+func UpdateBucket(sess *session.Session, bucketName string) error {
 
 	svc := s3.New(sess)
 	_, err := svc.PutBucketLogging(&s3.PutBucketLoggingInput{
@@ -54,7 +60,7 @@ func updateBucket(sess *session.Session, bucketName string) error {
 	return nil
 }
 
-func createBucket(sess *session.Session, bucketName string) error {
+func CreateBucket(sess *session.Session, bucketName string) error {
 
 	svc := s3.New(sess)
 	_, err := svc.CreateBucket(&s3.CreateBucketInput{
@@ -67,8 +73,8 @@ func createBucket(sess *session.Session, bucketName string) error {
 	return nil
 }
 
-// deleteBucket deletes the S3 bucket
-func deleteBucket(sess *session.Session, bucketName string) error {
+// DeleteBucket deletes the S3 bucket
+func DeleteBucket(sess *session.Session, bucketName string) error {
 
 	svc := s3.New(sess)
 
@@ -92,7 +98,7 @@ func (r *S3BucketReconciler) handleBucketDeletion(ctx context.Context, sess *ses
 		logger.Info("S3Bucket is being deleted", "BucketName", bucketName)
 
 		// delete the bucket
-		if err := deleteBucket(sess, bucketName); err != nil {
+		if err := DeleteBucket(sess, bucketName); err != nil {
 			return err
 		}
 
@@ -101,14 +107,14 @@ func (r *S3BucketReconciler) handleBucketDeletion(ctx context.Context, sess *ses
 			return err
 		}
 	}
+	logger.Info("S3Bucket is not being deleted", "BucketName", bucketName)
 	return nil
 }
 
 // removeFinalizer removes the finalizer from the S3 bucket
 func (r *S3BucketReconciler) removeFinalizer(ctx context.Context, s3Bucket *storagev1.S3Bucket) error {
 	// remove the finalizer
-	finalizerName := "s3bucket.finalizers.kubes3.io"
-	s3Bucket.Finalizers = removeString(s3Bucket.Finalizers, finalizerName)
+	s3Bucket.Finalizers = removeString(s3Bucket.Finalizers, finalizerS3Bucket)
 	if err := r.Update(ctx, s3Bucket); err != nil {
 		return err
 	}

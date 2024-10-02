@@ -26,7 +26,10 @@ import (
 	storagev1 "kubeS3/api/v1"
 )
 
-const defaultRegion = "us-east-1"
+const (
+	defaultRegion     = "us-east-1"
+	finalizerS3Bucket = "s3bucket.finalizers.kubes3.io"
+)
 
 // S3BucketReconciler reconciles a S3Bucket object
 type S3BucketReconciler struct {
@@ -64,7 +67,7 @@ func (r *S3BucketReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	logger.Info("S3Bucket data", "BucketName", bucketName, "Region", s3Bucket.Spec.Region, "State", s3Bucket.Status.State, "Size", s3Bucket.Status.Size, "ARN", s3Bucket.Status.ARN)
 
 	// create a aws session
-	sess, err := createSession(defaultRegion)
+	sess, err := CreateSession(defaultRegion)
 	if err != nil {
 		logger.Error(err, "Failed to create AWS session")
 		return ctrl.Result{}, err
@@ -79,25 +82,27 @@ func (r *S3BucketReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	logger.Info("Bucket is not being deleted, checking for other operations...")
 
 	// Check if the S3 bucket already exists
-	bucketExists, err := ifBucketExistsOnS3(sess, bucketName)
+	bucketExists, err := IfBucketExistsOnS3(sess, bucketName)
 	if err != nil {
 		logger.Error(err, "Failed to check if S3 bucket exists")
 		return ctrl.Result{}, err
 	}
 
-	// log if bucket exists
-	logger.Info("Bucket exists", "BucketExists", bucketExists)
-
 	if bucketExists {
 		// Update the S3 bucket configuration
-		if err := updateBucket(sess, bucketName); err != nil {
+
+		logger.Info("Bucket already exists, updating the bucket", "BucketName", bucketName)
+
+		if err := UpdateBucket(sess, bucketName); err != nil {
 			logger.Error(err, "Failed to update S3 bucket")
 			// update logic is work in progress
 			return ctrl.Result{}, err
 		}
 	} else {
 		// Create a new S3 bucket
-		if err := createBucket(sess, bucketName); err != nil {
+		logger.Info("Bucket does not exists, creating a new S3 bucket", "BucketName", bucketName)
+
+		if err := CreateBucket(sess, bucketName); err != nil {
 			logger.Error(err, "Failed to create S3 bucket")
 			return ctrl.Result{}, err
 		}
