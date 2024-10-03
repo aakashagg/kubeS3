@@ -19,6 +19,7 @@ package main
 import (
 	"crypto/tls"
 	"flag"
+	"kubeS3/internal/k8s"
 	"os"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
@@ -44,6 +45,10 @@ var (
 	scheme   = runtime.NewScheme()
 	setupLog = ctrl.Log.WithName("setup")
 )
+
+var AwsKey = ""
+var AwsSecret = ""
+var usingClusterCreds = true
 
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
@@ -82,6 +87,28 @@ func main() {
 	flag.Parse()
 
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
+
+	//
+	if usingClusterCreds {
+		// Setting up k8s client
+		k8sClient, err := k8s.CreateK8sClientSet()
+		if err != nil {
+			setupLog.Error(err, "unable to create k8s client using env values, but not recommended...")
+		} else {
+			clusterSecretName := "aws-credentials"
+			secretData, err := k8s.FetchAndStoreSecret(k8sClient, "default", clusterSecretName)
+			if err != nil {
+				setupLog.Error(err, "unable to fetch secret from k8s, using env values...")
+			} else {
+				AwsKey = secretData["AWS_ACCESS_KEY_ID"]
+				AwsSecret = secretData["AWS_SECRET"]
+				return
+			}
+		}
+		usingClusterCreds = false
+		AwsKey = os.Getenv("AWS_ACCESS_KEY_ID")
+		AwsSecret = os.Getenv("AWS_SECRET")
+	}
 
 	// if the enable-http2 flag is false (the default), http/2 should be disabled
 	// due to its vulnerabilities. More specifically, disabling http/2 will
