@@ -110,6 +110,12 @@ func main() {
 		AwsSecret = os.Getenv("AWS_SECRET")
 	}
 
+	session, err := controller.CreateAWSSession(AwsKey, AwsSecret, "us-east-1")
+	if err != nil {
+		setupLog.Error(err, "unable to create AWS session")
+		os.Exit(1)
+	}
+
 	// if the enable-http2 flag is false (the default), http/2 should be disabled
 	// due to its vulnerabilities. More specifically, disabling http/2 will
 	// prevent from being vulnerable to the HTTP/2 Stream Cancellation and
@@ -178,8 +184,9 @@ func main() {
 	}
 
 	if err = (&controller.S3BucketReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
+		Client:  mgr.GetClient(),
+		Scheme:  mgr.GetScheme(),
+		Session: session,
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "S3Bucket")
 		os.Exit(1)

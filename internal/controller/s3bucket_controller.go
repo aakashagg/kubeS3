@@ -18,6 +18,7 @@ package controller
 
 import (
 	"context"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -33,6 +34,7 @@ const (
 
 // S3BucketReconciler reconciles a S3Bucket object
 type S3BucketReconciler struct {
+	Session *session.Session
 	client.Client
 	Scheme *runtime.Scheme
 }
@@ -62,16 +64,10 @@ func (r *S3BucketReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		return ctrl.Result{}, err
 	}
 
-	// Log the S3Bucket data
+	sess := r.Session
 	bucketName := s3Bucket.Spec.BucketName
-	logger.Info("S3Bucket data", "BucketName", bucketName, "Region", s3Bucket.Spec.Region, "State", s3Bucket.Status.State, "Size", s3Bucket.Status.Size, "ARN", s3Bucket.Status.ARN)
 
-	// create a aws session
-	sess, err := CreateSession(defaultRegion)
-	if err != nil {
-		logger.Error(err, "Failed to create AWS session")
-		return ctrl.Result{}, err
-	}
+	logger.Info("S3Bucket data", "BucketName", bucketName, "Region", s3Bucket.Spec.Region, "State", s3Bucket.Status.State, "Size", s3Bucket.Status.Size, "ARN", s3Bucket.Status.ARN)
 
 	// check if bucket is being deleted if so handle deletion
 	if err := r.handleBucketDeletion(ctx, sess, s3Bucket, bucketName); err != nil {

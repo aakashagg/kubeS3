@@ -3,27 +3,24 @@ package controller
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	storagev1 "kubeS3/api/v1"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
-// CreateSession creates a new AWS session
-func CreateSession(region string) (*session.Session, error) {
-	ctx := context.Background()
-	logger := log.FromContext(ctx)
-
+// CreateAWSSession CreateSession creates a new AWS session
+func CreateAWSSession(accessKey, secretKey, region string) (*session.Session, error) {
 	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String(region),
+		Region:      aws.String(region),
+		Credentials: credentials.NewStaticCredentials(accessKey, secretKey, ""),
 	})
-
-	logger.Info("Created AWS session", "session", sess)
-
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create session: %v", err)
 	}
 	return sess, nil
 }
