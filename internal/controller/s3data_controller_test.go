@@ -18,7 +18,6 @@ package controller
 
 import (
 	"context"
-	"kubeS3/internal/controller/storage.awsresources.com"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -28,7 +27,7 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	storageawsresourcescomv1 "kubeS3/api/storage.awsresources.com/v1"
+	storageawsresourcescomv1 "kubeS3/api/v1"
 )
 
 var _ = Describe("S3Data Controller", func() {
@@ -45,7 +44,7 @@ var _ = Describe("S3Data Controller", func() {
 
 		BeforeEach(func() {
 			By("creating the custom resource for the Kind S3Data")
-			err := storageawsresourcescom.k8sClient.Get(ctx, typeNamespacedName, s3data)
+			err := k8sClient.Get(ctx, typeNamespacedName, s3data)
 			if err != nil && errors.IsNotFound(err) {
 				resource := &storageawsresourcescomv1.S3Data{
 					ObjectMeta: metav1.ObjectMeta{
@@ -54,24 +53,24 @@ var _ = Describe("S3Data Controller", func() {
 					},
 					// TODO(user): Specify other spec details if needed.
 				}
-				Expect(storageawsresourcescom.k8sClient.Create(ctx, resource)).To(Succeed())
+				Expect(k8sClient.Create(ctx, resource)).To(Succeed())
 			}
 		})
 
 		AfterEach(func() {
 			// TODO(user): Cleanup logic after each test, like removing the resource instance.
 			resource := &storageawsresourcescomv1.S3Data{}
-			err := storageawsresourcescom.k8sClient.Get(ctx, typeNamespacedName, resource)
+			err := k8sClient.Get(ctx, typeNamespacedName, resource)
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Cleanup the specific resource instance S3Data")
-			Expect(storageawsresourcescom.k8sClient.Delete(ctx, resource)).To(Succeed())
+			Expect(k8sClient.Delete(ctx, resource)).To(Succeed())
 		})
 		It("should successfully reconcile the resource", func() {
 			By("Reconciling the created resource")
 			controllerReconciler := &S3DataReconciler{
-				Client: storageawsresourcescom.k8sClient,
-				Scheme: storageawsresourcescom.k8sClient.Scheme(),
+				Client: k8sClient,
+				Scheme: k8sClient.Scheme(),
 			}
 
 			_, err := controllerReconciler.Reconcile(ctx, reconcile.Request{

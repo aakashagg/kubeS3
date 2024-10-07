@@ -37,7 +37,7 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
-	storageawsresourcescomv1 "kubeS3/api/storage.awsresources.com/v1"
+	storageawsresourcescomv1 "kubeS3/api/v1"
 	storagev1 "kubeS3/api/v1"
 	"kubeS3/internal/controller"
 	// +kubebuilder:scaffold:imports
