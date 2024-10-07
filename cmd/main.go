@@ -37,7 +37,6 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
-	storageawsresourcescomv1 "kubeS3/api/v1"
 	storagev1 "kubeS3/api/v1"
 	"kubeS3/internal/controller"
 	// +kubebuilder:scaffold:imports
@@ -56,7 +55,6 @@ func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
 	utilruntime.Must(storagev1.AddToScheme(scheme))
-	utilruntime.Must(storageawsresourcescomv1.AddToScheme(scheme))
 	// +kubebuilder:scaffold:scheme
 }
 

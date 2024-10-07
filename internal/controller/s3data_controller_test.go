@@ -27,7 +27,7 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	storageawsresourcescomv1 "kubeS3/api/v1"
+	storagev1 "kubeS3/api/v1"
 )
 
 var _ = Describe("S3Data Controller", func() {
@@ -40,13 +40,13 @@ var _ = Describe("S3Data Controller", func() {
 			Name:      resourceName,
 			Namespace: "default", // TODO(user):Modify as needed
 		}
-		s3data := &storageawsresourcescomv1.S3Data{}
+		s3data := &storagev1.S3Data{}
 
 		BeforeEach(func() {
 			By("creating the custom resource for the Kind S3Data")
 			err := k8sClient.Get(ctx, typeNamespacedName, s3data)
 			if err != nil && errors.IsNotFound(err) {
-				resource := &storageawsresourcescomv1.S3Data{
+				resource := &storagev1.S3Data{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      resourceName,
 						Namespace: "default",
@@ -59,7 +59,7 @@ var _ = Describe("S3Data Controller", func() {
 
 		AfterEach(func() {
 			// TODO(user): Cleanup logic after each test, like removing the resource instance.
-			resource := &storageawsresourcescomv1.S3Data{}
+			resource := &storagev1.S3Data{}
 			err := k8sClient.Get(ctx, typeNamespacedName, resource)
 			Expect(err).NotTo(HaveOccurred())
 

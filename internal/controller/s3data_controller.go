@@ -24,7 +24,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	storageawsresourcescomv1 "kubeS3/api/v1"
+	storagev1 "kubeS3/api/v1"
 )
 
 // S3DataReconciler reconciles a S3Data object
@@ -57,6 +57,6 @@ func (r *S3DataReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 // SetupWithManager sets up the controller with the Manager.
 func (r *S3DataReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&storageawsresourcescomv1.S3Data{}).
+		For(&storagev1.S3Data{}).
 		Complete(r)
 }
