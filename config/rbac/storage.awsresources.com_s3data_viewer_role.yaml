@@ -1,0 +1,23 @@
+# permissions for end users to view s3data.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: kubes3
+    app.kubernetes.io/managed-by: kustomize
+  name: storage.awsresources.com-s3data-viewer-role
+rules:
+- apiGroups:
+  - storage.awsresources.com.awsresources.com
+  resources:
+  - s3data
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - storage.awsresources.com.awsresources.com
+  resources:
+  - s3data/status
+  verbs:
+  - get

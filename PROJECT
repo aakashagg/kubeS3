@@ -5,6 +5,7 @@
 domain: awsresources.com
 layout:
 - go.kubebuilder.io/v4
+multigroup: true
 projectName: kubes3
 repo: kubeS3
 resources:
@@ -16,5 +17,14 @@ resources:
   group: storage
   kind: S3Bucket
   path: kubeS3/api/v1
+  version: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: awsresources.com
+  group: storage.awsresources.com
+  kind: S3Data
+  path: kubeS3/api/storage.awsresources.com/v1
   version: v1
 version: "3"

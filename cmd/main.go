@@ -19,8 +19,9 @@ package main
 import (
 	"crypto/tls"
 	"flag"
-	"kubeS3/internal/k8s"
 	"os"
+
+	"kubeS3/internal/k8s"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
@@ -36,8 +37,10 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
+	storageawsresourcescomv1 "kubeS3/api/storage.awsresources.com/v1"
 	storagev1 "kubeS3/api/v1"
 	"kubeS3/internal/controller"
+	storageawsresourcescomcontroller "kubeS3/internal/controller/storage.awsresources.com"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -54,6 +57,7 @@ func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
 	utilruntime.Must(storagev1.AddToScheme(scheme))
+	utilruntime.Must(storageawsresourcescomv1.AddToScheme(scheme))
 	// +kubebuilder:scaffold:scheme
 }
 
@@ -190,6 +194,13 @@ func main() {
 		Session: session,
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "S3Bucket")
+		os.Exit(1)
+	}
+	if err = (&storageawsresourcescomcontroller.S3DataReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "S3Data")
 		os.Exit(1)
 	}
 	// +kubebuilder:scaffold:builder

@@ -1,0 +1,9 @@
+apiVersion: storage.awsresources.com.awsresources.com/v1
+kind: S3Data
+metadata:
+  labels:
+    app.kubernetes.io/name: kubes3
+    app.kubernetes.io/managed-by: kustomize
+  name: s3data-sample
+spec:
+  # TODO(user): Add fields here

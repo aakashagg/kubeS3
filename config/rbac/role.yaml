@@ -31,3 +31,29 @@ rules:
   - get
   - patch
   - update
+- apiGroups:
+  - storage.awsresources.com.awsresources.com
+  resources:
+  - s3data
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - storage.awsresources.com.awsresources.com
+  resources:
+  - s3data/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - storage.awsresources.com.awsresources.com
+  resources:
+  - s3data/status
+  verbs:
+  - get
+  - patch
+  - update
