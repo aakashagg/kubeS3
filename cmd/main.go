@@ -40,7 +40,6 @@ import (
 	storageawsresourcescomv1 "kubeS3/api/storage.awsresources.com/v1"
 	storagev1 "kubeS3/api/v1"
 	"kubeS3/internal/controller"
-	storageawsresourcescomcontroller "kubeS3/internal/controller/storage.awsresources.com"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -196,7 +195,7 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "S3Bucket")
 		os.Exit(1)
 	}
-	if err = (&storageawsresourcescomcontroller.S3DataReconciler{
+	if err = (&controller.S3DataReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package storageawsresourcescom
+package controller
 
 import (
 	"context"
@@ -24,7 +24,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	storageawsresourcescomv1 "kubeS3/api/storage.awsresources.com/v1"
+	storageawsresourcescomv1 "kubeS3/api/v1"
 )
 
 // S3DataReconciler reconciles a S3Data object

@@ -14,10 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package storageawsresourcescom
+package controller
 
 import (
 	"context"
+	"kubeS3/internal/controller/storage.awsresources.com"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -44,7 +45,7 @@ var _ = Describe("S3Data Controller", func() {
 
 		BeforeEach(func() {
 			By("creating the custom resource for the Kind S3Data")
-			err := k8sClient.Get(ctx, typeNamespacedName, s3data)
+			err := storageawsresourcescom.k8sClient.Get(ctx, typeNamespacedName, s3data)
 			if err != nil && errors.IsNotFound(err) {
 				resource := &storageawsresourcescomv1.S3Data{
 					ObjectMeta: metav1.ObjectMeta{
@@ -53,24 +54,24 @@ var _ = Describe("S3Data Controller", func() {
 					},
 					// TODO(user): Specify other spec details if needed.
 				}
-				Expect(k8sClient.Create(ctx, resource)).To(Succeed())
+				Expect(storageawsresourcescom.k8sClient.Create(ctx, resource)).To(Succeed())
 			}
 		})
 
 		AfterEach(func() {
 			// TODO(user): Cleanup logic after each test, like removing the resource instance.
 			resource := &storageawsresourcescomv1.S3Data{}
-			err := k8sClient.Get(ctx, typeNamespacedName, resource)
+			err := storageawsresourcescom.k8sClient.Get(ctx, typeNamespacedName, resource)
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Cleanup the specific resource instance S3Data")
-			Expect(k8sClient.Delete(ctx, resource)).To(Succeed())
+			Expect(storageawsresourcescom.k8sClient.Delete(ctx, resource)).To(Succeed())
 		})
 		It("should successfully reconcile the resource", func() {
 			By("Reconciling the created resource")
 			controllerReconciler := &S3DataReconciler{
-				Client: k8sClient,
-				Scheme: k8sClient.Scheme(),
+				Client: storageawsresourcescom.k8sClient,
+				Scheme: storageawsresourcescom.k8sClient.Scheme(),
 			}
 
 			_, err := controllerReconciler.Reconcile(ctx, reconcile.Request{
