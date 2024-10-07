@@ -23,8 +23,8 @@ resources:
     namespaced: true
   controller: true
   domain: awsresources.com
-  group: storage.awsresources.com
+  group: storage
   kind: S3Data
-  path: kubeS3/api/storage.awsresources.com/v1
+  path: kubeS3/api/v1
   version: v1
 version: "3"
