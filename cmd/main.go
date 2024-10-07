@@ -148,6 +148,7 @@ func main() {
 		// as certificates issued by a trusted Certificate Authority (CA). The primary risk is potentially allowing
 		// unauthorized access to sensitive metrics data. Consider replacing with CertDir, CertName, and KeyName
 		// to provide certificates, ensuring the server communicates using trusted and secure certificates.
+		// To enable this we need cert-manager installed in cluster which makes it for it hard for the scope of this project.
 		TLSOpts: tlsOpts,
 	}
 
