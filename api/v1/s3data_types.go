@@ -25,9 +25,11 @@ import (
 
 // S3DataSpec defines the desired state of S3Data
 type S3DataSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
+	S3BucketName   string `json:"s3BucketName,required"`
+	PathOfPod      string `json:"pathOfPod,required"`
+	DeletionPolicy bool   `json:"deletionPolicy,omitempty"` // If true, the S3 bucket's data will be deleted when the resource is deleted
 	// Foo is an example field of S3Data. Edit s3data_types.go to remove/update
 	Foo string `json:"foo,omitempty"`
 }
@@ -36,6 +38,9 @@ type S3DataSpec struct {
 type S3DataStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	State        State `json:"state,omitempty"`
+	Size         int64 `json:"size,omitempty"`
+	PodConnected bool  `json:"podConnected,omitempty"`
 }
 
 // +kubebuilder:object:root=true
