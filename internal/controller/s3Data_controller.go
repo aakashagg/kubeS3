@@ -74,7 +74,7 @@ func (r *S3DataReconciler) handleS3DataDeletion(ctx context.Context, session *se
 			return err
 		}
 		logger.Info("Successfully deleted all data from S3 bucket", "BucketName", s3Data.Spec.S3BucketName)
-		
+
 	} else {
 		logger.Info("DeletionPolicy is false, skipping deletion of data from S3 bucket", "BucketName", s3Data.Spec.S3BucketName)
 	}

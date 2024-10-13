@@ -15,8 +15,8 @@ func S3Client(sess *session.Session) *s3.S3 {
 	return s3.New(sess)
 }
 
-// uploadDirToS3 uploads all files in a directory to an S3 bucket.
-func uploadDirToS3(s3Client *s3.S3, dirPath, bucketName string) error {
+// UploadDirToS3 uploads all files in a directory to an S3 bucket.
+func UploadDirToS3(s3Client *s3.S3, dirPath, bucketName string) error {
 	err := filepath.WalkDir(dirPath, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err

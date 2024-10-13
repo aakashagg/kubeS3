@@ -52,7 +52,7 @@ func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 
 	s3Client := aws.S3Client(r.Session)
 
-	err = aws.uploadDirToS3(s3Client, pathInDataResource, s3Bucket.Spec.S3BucketName)
+	err = aws.UploadDirToS3(s3Client, pathInDataResource, s3Bucket.Spec.S3BucketName)
 
 	return ctrl.Result{}, nil
 }

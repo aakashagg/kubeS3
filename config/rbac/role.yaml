@@ -34,6 +34,7 @@ rules:
   - storage.awsresources.com
   resources:
   - s3buckets
+  - s3datas
   verbs:
   - create
   - delete
@@ -46,6 +47,7 @@ rules:
   - storage.awsresources.com
   resources:
   - s3buckets/finalizers
+  - s3datas/finalizers
   verbs:
   - update
 - apiGroups:
@@ -54,6 +56,14 @@ rules:
   - s3buckets/status
   verbs:
   - create
+  - get
+  - patch
+  - update
+- apiGroups:
+  - storage.awsresources.com
+  resources:
+  - s3datas/status
+  verbs:
   - get
   - patch
   - update
