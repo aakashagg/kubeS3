@@ -14,6 +14,8 @@ import (
 	storagev1 "kubeS3/api/v1" // Adjust this import path to match your project
 )
 
+const finalizerS3Data = "s3data.finalizers.kubes3.io"
+
 // S3DataReconciler reconciles a S3Data object
 type S3DataReconciler struct {
 	Session *session.Session
@@ -36,6 +38,21 @@ func (r *S3DataReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		logger.Error(err, "Failed to handle S3Data deletion")
 		return ctrl.Result{}, err
 	}
+
+	// Fetch the S3Data resource
+	var s3Data storagev1.S3Data
+	if err := r.Get(ctx, req.NamespacedName, &s3Data); err != nil {
+		logger.Error(err, "Failed to fetch S3Data resource")
+		return ctrl.Result{}, err
+	}
+
+	s3client := aws.S3Client(r.Session)
+	s3Size, err := aws.GetBucketSize(s3client, s3Data.Spec.S3BucketName)
+	if err != nil {
+		logger.Error(err, "Failed to get S3 bucket size")
+		return ctrl.Result{}, err
+	}
+	s3Data.Status.Size = s3Size
 
 	return ctrl.Result{}, nil
 }
@@ -80,7 +97,7 @@ func (r *S3DataReconciler) handleS3DataDeletion(ctx context.Context, session *se
 	}
 
 	// Remove finalizer to allow deletion of the S3Data resource
-	s3Data.ObjectMeta.Finalizers = removeString(s3Data.ObjectMeta.Finalizers, "finalizer.s3data.storage.awsresources.com")
+	s3Data.ObjectMeta.Finalizers = removeString(s3Data.ObjectMeta.Finalizers, finalizerS3Data)
 	if err := r.Update(ctx, &s3Data); err != nil {
 		return err
 	}

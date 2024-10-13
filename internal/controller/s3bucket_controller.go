@@ -28,7 +28,6 @@ import (
 )
 
 const (
-	defaultRegion     = "us-east-1"
 	finalizerS3Bucket = "s3bucket.finalizers.kubes3.io"
 )
 

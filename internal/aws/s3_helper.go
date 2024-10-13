@@ -80,3 +80,18 @@ func EmptyBucket(s3Client *s3.S3, bucketName string) error {
 
 	return nil
 }
+
+// create a function to get the size of the bucket
+func GetBucketSize(s3Client *s3.S3, bucketName string) (int64, error) {
+	resp, err := s3Client.ListObjectsV2(&s3.ListObjectsV2Input{
+		Bucket: aws.String(bucketName),
+	})
+	if err != nil {
+		return 0, err
+	}
+	var size int64
+	for _, obj := range resp.Contents {
+		size += *obj.Size
+	}
+	return size, nil
+}
