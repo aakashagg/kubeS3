@@ -48,9 +48,7 @@ type State string
 type S3BucketStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
-	State State  `json:"state,omitempty"`
-	Size  int64  `json:"size,omitempty"`
-	ARN   string `json:"arn,omitempty"`
+	State State `json:"state,omitempty"`
 }
 
 // +kubebuilder:object:root=true

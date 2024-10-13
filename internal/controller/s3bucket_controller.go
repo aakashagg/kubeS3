@@ -66,8 +66,6 @@ func (r *S3BucketReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	sess := r.Session
 	bucketName := s3Bucket.Spec.BucketName
 
-	logger.Info("S3Bucket data", "BucketName", bucketName, "Region", s3Bucket.Spec.Region, "State", s3Bucket.Status.State, "Size", s3Bucket.Status.Size, "ARN", s3Bucket.Status.ARN)
-
 	// check if bucket is being deleted if so handle deletion
 	if err := r.handleBucketDeletion(ctx, sess, s3Bucket, bucketName); err != nil {
 		logger.Error(err, "Failed to handle bucket deletion")

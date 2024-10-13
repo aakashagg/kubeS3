@@ -54,11 +54,6 @@ spec:
           status:
             description: S3BucketStatus defines the observed state of S3Bucket
             properties:
-              arn:
-                type: string
-              size:
-                format: int64
-                type: integer
               state:
                 description: |-
                   INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
