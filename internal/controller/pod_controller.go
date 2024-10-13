@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws/session"
 	v1 "kubeS3/api/v1"
+	"kubeS3/internal/aws"
 
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -49,9 +50,9 @@ func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 
 	pathInDataResource := s3Bucket.Spec.PathOfPod
 
-	s3Client := S3Client(r.Session)
+	s3Client := aws.S3Client(r.Session)
 
-	err = uploadDirToS3(s3Client, pathInDataResource, s3Bucket.Spec.S3BucketName)
+	err = aws.uploadDirToS3(s3Client, pathInDataResource, s3Bucket.Spec.S3BucketName)
 
 	return ctrl.Result{}, nil
 }
