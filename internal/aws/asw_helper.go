@@ -56,3 +56,27 @@ func uploadFileToS3(s3Client *s3.S3, filename, bucketName string) error {
 	})
 	return err
 }
+
+// create a function that empties the s3 bucket
+func EmptyBucket(s3Client *s3.S3, bucketName string) error {
+	// List all objects in the bucket
+	resp, err := s3Client.ListObjectsV2(&s3.ListObjectsV2Input{
+		Bucket: aws.String(bucketName),
+	})
+	if err != nil {
+		return err
+	}
+
+	// Delete all objects in the bucket
+	for _, obj := range resp.Contents {
+		_, err := s3Client.DeleteObject(&s3.DeleteObjectInput{
+			Bucket: aws.String(bucketName),
+			Key:    obj.Key,
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
