@@ -8,3 +8,5 @@
 6. Run that binary using bin/<binary name>
 7. Now install the cr S3Bucket in the cluster and you should see the logs of creating a S3 bucket
 8. TO verify check the AWS Console and see if the S3 bucket is present or not
+9. Create a S3Data object with the path and BucketName.
+10. Create a pod with data present in the path provided in the S3Data object path and you should see the same data present on S3 bucket in AWS Console.

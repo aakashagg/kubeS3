@@ -1,5 +1,8 @@
 package main
 
+// this is a test main function
+
+/*
 import (
 	"context"
 	"fmt"
@@ -93,3 +96,4 @@ func main() {
 
 	fmt.Println("All files uploaded successfully.")
 }
+*/
