@@ -23,55 +23,47 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
-//const (
-//	StateDeleted     State = "Deleted"
-//	StateFailed      State = "Failed"
-//	StateReconciling State = "Reconciling"
-//	StateReady       State = "Ready"
-//)
+// S3DataSpec defines the desired state of S3Data
+type S3DataSpec struct {
+	// Important: Run "make" to regenerate code after modifying this file
 
-// ###Important: Run "make" to regenerate code after modifying this file###
-
-// S3BucketSpec defines the desired state of S3Bucket
-type S3BucketSpec struct {
-	BucketName   string `json:"bucketName,required"`
-	Region       string `json:"region,required"`
-	BucketPolicy string `json:"bucketPolicy,omitempty"`
-	Acl          string `json:"acl,omitempty"`
-
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+	S3BucketName   string `json:"s3BucketName,required"`
+	PathOfPod      string `json:"pathOfPod,required"`
+	DeletionPolicy bool   `json:"deletionPolicy,omitempty"` // If true, the S3 bucket's data will be deleted when the resource is deleted
+	// Foo is an example field of S3Data. Edit s3data_types.go to remove/update
+	Foo string `json:"foo,omitempty"`
 }
 
-type State string
-
-// S3BucketStatus defines the observed state of S3Bucket
-type S3BucketStatus struct {
+// S3DataStatus defines the observed state of S3Data
+type S3DataStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
-	State State `json:"state,omitempty"`
+	State        State `json:"state,omitempty"`
+	Size         int64 `json:"size,omitempty"`
+	PodConnected bool  `json:"podConnected,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 
-// S3Bucket is the Schema for the s3buckets API
-type S3Bucket struct {
+// S3Data is the Schema for the s3data API
+type S3Data struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   S3BucketSpec   `json:"spec,omitempty"`
-	Status S3BucketStatus `json:"status,omitempty"`
+	Spec   S3DataSpec   `json:"spec,omitempty"`
+	Status S3DataStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
-// S3BucketList contains a list of S3Bucket
-type S3BucketList struct {
+// S3DataList contains a list of S3Data
+type S3DataList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []S3Bucket `json:"items"`
+	Items           []S3Data `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&S3Bucket{}, &S3BucketList{})
+	SchemeBuilder.Register(&S3Data{}, &S3DataList{})
 }

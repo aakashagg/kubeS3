@@ -17,4 +17,13 @@ resources:
   kind: S3Bucket
   path: kubeS3/api/v1
   version: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: awsresources.com
+  group: storage
+  kind: S3Data
+  path: kubeS3/api/v1
+  version: v1
 version: "3"

@@ -91,6 +91,8 @@ func (r *S3BucketReconciler) handleBucketDeletion(ctx context.Context, sess *ses
 
 	if s3Bucket.ObjectMeta.DeletionTimestamp != nil {
 
+		s3Bucket.Status.State = deletingState
+
 		// log the deletion
 		logger.Info("S3Bucket is being deleted", "BucketName", bucketName)
 
@@ -104,6 +106,7 @@ func (r *S3BucketReconciler) handleBucketDeletion(ctx context.Context, sess *ses
 			return err
 		}
 	}
+
 	logger.Info("S3Bucket is not being deleted", "BucketName", bucketName)
 	return nil
 }

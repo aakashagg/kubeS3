@@ -4,20 +4,20 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.16.1
-  name: s3buckets.storage.awsresources.com
+  name: s3data.storage.awsresources.com
 spec:
   group: storage.awsresources.com
   names:
-    kind: S3Bucket
-    listKind: S3BucketList
-    plural: s3buckets
-    singular: s3bucket
+    kind: S3Data
+    listKind: S3DataList
+    plural: s3data
+    singular: s3data
   scope: Namespaced
   versions:
   - name: v1
     schema:
       openAPIV3Schema:
-        description: S3Bucket is the Schema for the s3buckets API
+        description: S3Data is the Schema for the s3data API
         properties:
           apiVersion:
             description: |-
@@ -37,23 +37,30 @@ spec:
           metadata:
             type: object
           spec:
-            description: S3BucketSpec defines the desired state of S3Bucket
+            description: S3DataSpec defines the desired state of S3Data
             properties:
-              acl:
+              deletionPolicy:
+                type: boolean
+              foo:
+                description: Foo is an example field of S3Data. Edit s3data_types.go
+                  to remove/update
                 type: string
-              bucketName:
+              pathOfPod:
                 type: string
-              bucketPolicy:
-                type: string
-              region:
+              s3BucketName:
                 type: string
             required:
-            - bucketName
-            - region
+            - pathOfPod
+            - s3BucketName
             type: object
           status:
-            description: S3BucketStatus defines the observed state of S3Bucket
+            description: S3DataStatus defines the observed state of S3Data
             properties:
+              podConnected:
+                type: boolean
+              size:
+                format: int64
+                type: integer
               state:
                 description: |-
                   INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
