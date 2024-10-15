@@ -29,6 +29,8 @@ import (
 
 const (
 	finalizerS3Bucket = "s3bucket.finalizers.kubes3.io"
+	createdState      = "Created"
+	deletingState     = "Deleting"
 )
 
 // S3BucketReconciler reconciles a S3Bucket object
@@ -83,6 +85,8 @@ func (r *S3BucketReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 
 	if bucketExists {
 		// Update the S3 bucket configuration
+		// (TODO) need a better logic to update the bucket, updating bucket will mostly involve changing the name or policy may need a companre function
+		// (TODO) right now todo is only changing the bucket name sadly
 
 		logger.Info("Bucket already exists, updating the bucket", "BucketName", bucketName)
 
@@ -91,14 +95,20 @@ func (r *S3BucketReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 			// update logic is work in progress
 			return ctrl.Result{}, err
 		}
+
 	} else {
 		// Create a new S3 bucket
 		logger.Info("Bucket does not exists, creating a new S3 bucket", "BucketName", bucketName)
+
+		// TODO we also need to add policy to the bucket right now we are just creating the bucket with name
 
 		if err := CreateBucket(sess, bucketName); err != nil {
 			logger.Error(err, "Failed to create S3 bucket")
 			return ctrl.Result{}, err
 		}
+
+		s3Bucket.Status.State = createdState
+
 	}
 
 	return ctrl.Result{}, nil

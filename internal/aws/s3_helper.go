@@ -16,9 +16,29 @@ func S3Client(sess *session.Session) *s3.S3 {
 }
 
 // UploadDirToS3 uploads all files in a directory to an S3 bucket.
+
 func UploadDirToS3(s3Client *s3.S3, dirPath, bucketName string) error {
-	err := filepath.WalkDir(dirPath, func(path string, d fs.DirEntry, err error) error {
+	// Check if the directory exists
+	_, err := os.Stat(dirPath)
+	if os.IsNotExist(err) {
+		return fmt.Errorf("directory %s does not exist", dirPath)
+	}
+	if err != nil {
+		return err
+	}
+
+	// Check if the directory is empty
+	entries, err := os.ReadDir(dirPath)
+	if err != nil {
+		return err
+	}
+	if len(entries) == 0 {
+		return fmt.Errorf("directory %s is empty", dirPath)
+	}
+
+	err = filepath.WalkDir(dirPath, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
+			fmt.Println("Error accessing path", path)
 			return err
 		}
 

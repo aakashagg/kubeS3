@@ -26,23 +26,26 @@ type PodReconciler struct {
 //+kubebuilder:rbac:groups=core,resources=pods/log,verbs=get
 
 func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+
+	// TODO maybe we need hook for pod resource in k8s, need to check
+
 	logger := log.FromContext(ctx)
 
 	logger.Info("Reconciling Pod Controller")
 
-	// your logic here
 	var pod corev1.Pod
 	if err := r.Get(ctx, req.NamespacedName, &pod); err != nil {
-		// handle error
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
 	fmt.Printf("Reconciling Pod: %s/%s\n", pod.Name, pod.Namespace)
 
-	// TODO: Add your reconciliation logic
-
-	s3Bucket, err := r.getS3data(pod)
+	s3Bucket, err := r.getS3data(pod) //getting the S3Data name form Annotation
 	if err != nil {
+
+		logger.Info("S3DataName not found in the pod annotation", "PodName", pod.Name)
+		logger.Info("maybe this pod is not supposed to upload data to S3")
+
 		return ctrl.Result{}, err
 	}
 
@@ -50,9 +53,22 @@ func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 
 	pathInDataResource := s3Bucket.Spec.PathOfPod
 
-	s3Client := aws.S3Client(r.Session)
+	s3Client := aws.S3Client(r.Session) //creating a new S3 client from the session
 
+	// main magic happens here, uploading data to S3 bucket
 	err = aws.UploadDirToS3(s3Client, pathInDataResource, s3Bucket.Spec.S3BucketName)
+	if err != nil {
+		logger.Error(err, "Error uploading data to S3, requeing the request after 500 ms")
+
+		if err.Error() == "directory "+pathInDataResource+" does not exist" {
+			logger.Info("Directory does not exist, no need to requeue")
+			return ctrl.Result{}, err
+		}
+
+		return ctrl.Result{Requeue: true, RequeueAfter: 500}, err
+	}
+
+	logger.Info("Data uploaded to S3 successfully")
 
 	return ctrl.Result{}, nil
 }
