@@ -18,9 +18,7 @@ To get started with kubeS3, you need to have the following prerequisites install
 
 ## Diagram
 
-<p align="center">
-     ![kubeS3](docs/Images/kubeS3.png "Architecture of kubeS3 Controller")
-</p>
+[Diagram here](./docs/Images/kubeS3.png)
 
 ### Prerequisites
 - go version v1.22.0+
