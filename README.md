@@ -19,7 +19,7 @@ To get started with kubeS3, you need to have the following prerequisites install
 ## Diagram
 
 <p align="center">
-     <img src="docs/Images/kubeS3.png" alt="kubeS3" title="Architecture of kubeS3 Controller" width="500"/>
+     <img src="docs/Images/kubeS3.png" alt="kubeS3" title="Architecture of kubeS3 Controller"/>
 </p>
 
 ### Prerequisites
