@@ -17,7 +17,8 @@ You can automate the management of S3 buckets in AWS using Kubernetes CRDs. The 
 To get started with kubeS3, you need to have the following prerequisites installed on your system:
 
 ## Diagram
-![kubeS3](./docs/images/kubeS3.png)
+
+<img src="/docs/images/kubeS3.png" alt="kubeS3" width="400" height="250"/>
 
 ### Prerequisites
 - go version v1.22.0+
