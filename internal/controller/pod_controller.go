@@ -28,6 +28,7 @@ type PodReconciler struct {
 func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 
 	// TODO maybe we need hook for pod resource in k8s, need to check
+	// Looks like we dont need
 
 	logger := log.FromContext(ctx)
 
