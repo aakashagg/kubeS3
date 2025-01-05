@@ -32,5 +32,3 @@ To get started with kubeS3, you need to have the following prerequisites install
 - Access to a Kubernetes v1.11.3+ cluster.
 - Local cluster setup using kind or minikube.
 - Access to an AWS account and the aws keys injected on your environment.
-
-TODO Add a arch diagram here
