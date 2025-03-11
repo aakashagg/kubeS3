@@ -15,16 +15,12 @@ kubeS3 is a Kubernetes controller that allows you to create and manage S3 bucket
 - Storing configuration files and secrets securely.
 - Facilitating data retrieval for analytics and reporting.
 
-## Features
-You can automate the management of S3 buckets in AWS using Kubernetes CRDs. The following are the features of kubeS3:
-
-## Getting Started
-To get started with kubeS3, you need to have the following prerequisites installed on your system:
-
 ## Diagram
 
 [Diagram here](./docs/Images/kubeS3.png)
 
+## Getting Started
+To get started with kubeS3, you need to have the following prerequisites installed on your system:
 ### Prerequisites
 - go version v1.22.0+
 - docker version 17.03+.
