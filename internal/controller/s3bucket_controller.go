@@ -118,5 +118,6 @@ func (r *S3BucketReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 func (r *S3BucketReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&storagev1.S3Bucket{}).
+		// We can add predicates
 		Complete(r)
 }
