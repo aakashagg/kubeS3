@@ -1,7 +1,7 @@
 # kubeS3
 This project lets you create and manage S3 buckets in AWS using Kubernetes CRDs.
 This can upload your pod's data to your desired S3 bucket.
-This is build with tht help of [Kubebuilder](https://book.kubebuilder.io/) tool.
+This is build with the help of [Kubebuilder](https://book.kubebuilder.io/) tool.
 
 ## Description
 kubeS3 is a Kubernetes controller that allows you to create and manage S3 buckets in AWS using Kubernetes CRDs. It provides a simple way to create and manage S3 buckets in AWS using Kubernetes CRDs.
