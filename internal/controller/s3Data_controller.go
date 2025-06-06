@@ -34,7 +34,7 @@ func (r *S3DataReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 	logger.Info("Reconciling S3Data...")
 
 	// if the S3Data resource is being deleted, handle deletion
-	if err := r.handleS3DataDeletion(ctx, nil, req); err != nil {
+	if err := r.handleS3DataDeletion(ctx, r.Session, req); err != nil {
 		logger.Error(err, "Failed to handle S3Data deletion")
 		return ctrl.Result{}, err
 	}
