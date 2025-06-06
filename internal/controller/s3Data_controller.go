@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"fmt"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"kubeS3/internal/aws"
 	"sigs.k8s.io/controller-runtime/pkg/log"
@@ -34,7 +35,7 @@ func (r *S3DataReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 	logger.Info("Reconciling S3Data...")
 
 	// if the S3Data resource is being deleted, handle deletion
-	if err := r.handleS3DataDeletion(ctx, nil, req); err != nil {
+	if err := r.handleS3DataDeletion(ctx, r.Session, req); err != nil {
 		logger.Error(err, "Failed to handle S3Data deletion")
 		return ctrl.Result{}, err
 	}
@@ -71,6 +72,14 @@ func (r *S3DataReconciler) handleS3DataDeletion(ctx context.Context, session *se
 	var s3Data storagev1.S3Data
 	if err := r.Get(ctx, req.NamespacedName, &s3Data); err != nil {
 		return client.IgnoreNotFound(err)
+	}
+
+	// use reconciler session if none was provided
+	if session == nil {
+		session = r.Session
+	}
+	if session == nil {
+		return fmt.Errorf("aws session is nil")
 	}
 
 	// Check if the S3Data resource is marked for deletion
