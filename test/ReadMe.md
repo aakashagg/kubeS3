@@ -1,2 +1,1 @@
-## We dont have integration tests for this, maybe in future we can have this.
-This is only a ghost repo which comes with the basic setup of the kubebuilder.
+We don’t have integration tests yet. This repository only includes the basic Kubebuilder setup.
